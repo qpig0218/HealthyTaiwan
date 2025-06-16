@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>醫療機構四大範疇KPI儀表板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1em;
+            margin-top: -30px;
+            margin-bottom: 40px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .category {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .category h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .objectives {
+            margin-bottom: 20px;
+        }
+        
+        .objective {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .objective:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .objective h3 {
+            color: #495057;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .indicators {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .indicator {
+            margin-bottom: 8px;
+            color: #6c757d;
+            font-size: 0.95em;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .indicator::before {
+            content: '▪';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        
+        .kpi-examples {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        
+        .kpi-examples h4 {
+            color: #0066cc;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .kpi-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        
+        .kpi-item:hover {
+            background: #f0f8ff;
+            transform: translateX(3px);
+        }
+        
+        .kpi-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        
+        .summary {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 醫療機構四大範疇目標與KPI儀表板</h1>
+        <div class="subtitle">（視覺化 by奇美醫院）</div>
+        
+        <div class="grid">
+            <!-- 範疇一：優化醫療工作條件 -->
+            <div class="category">
+                <h2><span class="icon">1️⃣</span>優化醫療工作條件</h2>
+                
+                <div class="objectives">
+                    <div class="objective">
+                        <h3>目標1：提高醫事人員核心價值與工作環境</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：提供具有競爭力的薪酬或福利</div>
+                            <div class="indicator">績效指標2：設立新的薪資制度</div>
+                            <div class="indicator">績效指標3：實施靈活的工作時間與輪班制</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">薪資</span>
+                                <span>平均薪資成長率 ≥ 5%/年</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">滿意度</span>
+                                <span>員工薪資滿意度 ≥ 80%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">工時</span>
+                                <span>加班時數降低 20%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標2：優化醫院內資源配置</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：消除資源浪費，精確的需求預測</div>
+                            <div class="indicator">績效指標2：提升關鍵資源的使用效率</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">效率</span>
+                                <span>醫療設備使用率 ≥ 85%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">成本</span>
+                                <span>資源浪費率 < 5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標3：擴大科技投資降低工作負荷</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：引入AI和機器人流程自動化</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">自動化</span>
+                                <span>行政工作自動化率 ≥ 60%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">時間</span>
+                                <span>文書處理時間減少 40%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標4：制定醫事人力留任策略</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：培養良好的團隊合作精神</div>
+                            <div class="indicator">績效指標2：合理的工作安排和支援措施</div>
+                            <div class="indicator">績效指標3：建立員工關懷計劃</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">留任</span>
+                                <span>年度離職率 < 10%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">團隊</span>
+                                <span>團隊合作滿意度 ≥ 85%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 範疇二：規劃多元人才培訓 -->
+            <div class="category">
+                <h2><span class="icon">2️⃣</span>規劃多元人才培訓</h2>
+                
+                <div class="objectives">
+                    <div class="objective">
+                        <h3>目標1：提供持續教育和專業發展機會</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：專業培訓和進修機會</div>
+                            <div class="indicator">績效指標2：鼓勵參加國內外學術會議</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">培訓</span>
+                                <span>年度培訓時數 ≥ 40小時/人</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">參與</span>
+                                <span>學術會議參與率 ≥ 70%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標2：促進醫事人員跨領域合作和學習</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：鼓勵跨部門合作項目</div>
+                            <div class="indicator">績效指標2：提供管理、技術等多方面培訓</div>
+                            <div class="indicator">績效指標3：提升人員在數位工具和技術方面的能力</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">跨域</span>
+                                <span>跨部門專案數 ≥ 10個/年</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">數位</span>
+                                <span>數位技能認證率 ≥ 80%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標3：提高急重難科醫師的回流誘因</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：急重難科醫師的合理分配</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">招募</span>
+                                <span>急重症科醫師招募達成率 ≥ 90%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">津貼</span>
+                                <span>特殊津貼增加 30%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標4：建立明確的職涯發展路徑</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：清晰的職涯發展計劃</div>
+                            <div class="indicator">績效指標2：實施導師制度</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">發展</span>
+                                <span>職涯規劃完成率 100%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">導師</span>
+                                <span>導師制度覆蓋率 ≥ 95%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 範疇三：導入智慧科技醫療 -->
+            <div class="category">
+                <h2><span class="icon">3️⃣</span>導入智慧科技醫療</h2>
+                
+                <div class="objectives">
+                    <div class="objective">
+                        <h3>目標1：AI科技協助臨床醫療</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：以AI取代大規模重複性的影像判讀</div>
+                            <div class="indicator">績效指標2：AI醫療解決方案的應用場域</div>
+                            <div class="indicator">績效指標3：更多AI解決方案進入臨床應用</div>
+                            <div class="indicator">績效指標4：AI自然融入健康照護的價值鏈</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">AI應用</span>
+                                <span>AI輔助診斷準確率 ≥ 95%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">效率</span>
+                                <span>影像判讀時間減少 50%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">覆蓋</span>
+                                <span>AI應用科別覆蓋率 ≥ 70%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標2：引進國際檢驗的醫療科技及技術</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：透過技術轉移，引進國際先進的醫療技術</div>
+                            <div class="indicator">績效指標2：更新醫療科技設備</div>
+                            <div class="indicator">績效指標3：與本地企業進行創新研發</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">技術</span>
+                                <span>新技術引進數 ≥ 5項/年</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">設備</span>
+                                <span>醫療設備更新率 ≥ 20%/年</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標3：優化醫療照護流程和效率</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：透過電子病歷系統簡化管理</div>
+                            <div class="indicator">績效指標2：對現有的醫療流程進行盤點和整合</div>
+                            <div class="indicator">績效指標3：利用大數據和AI進行數據分析</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">數位化</span>
+                                <span>電子病歷使用率 100%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">流程</span>
+                                <span>就醫等候時間減少 30%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標4：醫療數據共享平台安全</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：建立安全的醫療數據共享平台</div>
+                            <div class="indicator">績效指標2：醫院資訊系統取得資安認證及檢測</div>
+                            <div class="indicator">績效指標3：確保患者數據的隱私和安全</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">資安</span>
+                                <span>資安事件發生率 < 0.1%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">認證</span>
+                                <span>ISO 27001認證維持率 100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標5：朝智慧醫院發展</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：導入各種數位化基礎設施及技術</div>
+                            <div class="indicator">績效指標2：門診及病房採取智慧流程和系統</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">智慧化</span>
+                                <span>智慧醫療系統導入率 ≥ 80%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">滿意度</span>
+                                <span>智慧服務滿意度 ≥ 90%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 範疇四：社會責任醫療永續 -->
+            <div class="category">
+                <h2><span class="icon">4️⃣</span>社會責任醫療永續</h2>
+                
+                <div class="objectives">
+                    <div class="objective">
+                        <h3>目標1：落實分級醫療制度</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：醫療照護多元發展醫療照護，發展與建立連續性照護</div>
+                            <div class="indicator">績效指標2：促進不同醫療專業之間的合作</div>
+                            <div class="indicator">績效指標3：發展個性化醫療</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">轉診</span>
+                                <span>雙向轉診率 ≥ 25%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">整合</span>
+                                <span>整合照護覆蓋率 ≥ 60%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標2：協助政府提升醫療資源的可及性和公平性</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：派遣醫療團隊到偏遠地區</div>
+                            <div class="indicator">績效指標2：協助維穩定離島或非山非市地區醫療機構24小時之急重症照護量能及提升品質</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">偏鄉</span>
+                                <span>偏鄉服務人次 ≥ 5000人/年</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">急診</span>
+                                <span>急診等候時間 < 30分鐘</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標3：營造健康生活型態</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：提供病人個別化的健康生活處方</div>
+                            <div class="indicator">績效指標2：提供社區健康資源</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">預防</span>
+                                <span>健康促進活動參與率 ≥ 40%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">社區</span>
+                                <span>社區健檢覆蓋率 ≥ 70%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標4：致力於減少碳足跡，推動綠色醫院</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：醫療照護產業透過減少醫療設施產生的直接碳排放來實現脫碳</div>
+                            <div class="indicator">績效指標2：醫院新建或擴建時，從設計到運營都需要考慮環保和可持續性</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">環保</span>
+                                <span>碳排放量年減 10%</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">能源</span>
+                                <span>再生能源使用率 ≥ 30%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="objective">
+                        <h3>目標5：建立環境、社會和治理(ESG)管理模式</h3>
+                        <div class="indicators">
+                            <div class="indicator">績效指標1：定期發布永續報告書</div>
+                        </div>
+                        <div class="kpi-examples">
+                            <h4>📊 KPI範例：</h4>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">ESG</span>
+                                <span>ESG評分等級 ≥ A級</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span class="kpi-badge">報告</span>
+                                <span>永續報告完成率 100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>📈 總體績效摘要</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">大範疇</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">19</div>
+                    <div class="stat-label">核心目標</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">48</div>
+                    <div class="stat-label">績效指標</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">76</div>
+                    <div class="stat-label">KPI範例</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加動態效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const categories = document.querySelectorAll('.category');
+            const objectives = document.querySelectorAll('.objective');
+            
+            // 為類別添加延遲動畫
+            categories.forEach((category, index) => {
+                category.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // 為目標添加點擊展開/收合功能
+            objectives.forEach(objective => {
+                const h3 = objective.querySelector('h3');
+                h3.style.cursor = 'pointer';
+                
+                h3.addEventListener('click', function() {
+                    const content = objective.querySelectorAll('.indicators, .kpi-examples');
+                    content.forEach(item => {
+                        if (item.style.display === 'none') {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // 統計數字動畫
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalValue = parseInt(stat.textContent);
+                let currentValue = 0;
+                const increment = finalValue / 30;
+                
+                const counter = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        currentValue = finalValue;
+                        clearInterval(counter);
+                    }
+                    stat.textContent = Math.floor(currentValue);
+                }, 50);
+            });
+        });
+    </script>
+</body>
+</html>
